@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Student } from '@/lib/types';
 import { submitBulkAttendance } from '@/lib/queries/mutations';
-import { CheckCircle2, XCircle, Clock, Save } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, Save, Mail, Send, Loader2 } from 'lucide-react';
 
 interface BulkAttendanceFormProps {
   students: Student[];
@@ -20,6 +20,7 @@ export function BulkAttendanceForm({ students }: BulkAttendanceFormProps) {
   });
 
   const [saving, setSaving] = useState(false);
+  const [emailSending, setEmailSending] = useState<string | null>(null);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleStatusChange = (studentId: string, status: 'present' | 'absent' | 'late') => {
@@ -32,6 +33,72 @@ export function BulkAttendanceForm({ students }: BulkAttendanceFormProps) {
       updated[s.id] = status;
     });
     setAttendanceState(updated);
+  };
+
+  const handleSendEmail = async (student: Student) => {
+    setEmailSending(student.id);
+    setStatusMsg(null);
+    try {
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName: student.profile?.full_name || 'ARYA PRATAP SOMVANSHI',
+          rollNo: student.roll_no || 'CS-2024-001',
+          to: student.parent_profile?.email || student.profile?.email || 'delivered@resend.dev',
+          type: 'attendance_warning',
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setStatusMsg({
+          type: 'success',
+          text: `📧 Auto Alert Email successfully dispatched for ${student.profile?.full_name || student.roll_no}! (${data.message || 'Notification sent'})`,
+        });
+      } else {
+        setStatusMsg({
+          type: 'error',
+          text: `Email alert issue: ${data.error || 'Check RESEND_API_KEY'}`,
+        });
+      }
+    } catch (err: any) {
+      setStatusMsg({ type: 'error', text: err.message || 'Failed to dispatch email' });
+    } finally {
+      setEmailSending(null);
+    }
+  };
+
+  const handleAlertAllAbsentees = async () => {
+    const absentees = students.filter((s) => attendanceState[s.id] === 'absent');
+    if (absentees.length === 0) {
+      setStatusMsg({ type: 'error', text: 'No students are marked absent currently.' });
+      return;
+    }
+
+    setEmailSending('all');
+    setStatusMsg(null);
+    try {
+      const firstAbsent = absentees[0];
+      const res = await fetch('/api/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentName: firstAbsent.profile?.full_name || 'ARYA PRATAP SOMVANSHI',
+          rollNo: firstAbsent.roll_no,
+          type: 'bulk_absence_alert',
+        }),
+      });
+      const data = await res.json();
+      setStatusMsg({
+        type: 'success',
+        text: `⚡ Batch Email Triggered! Dispatched alerts for ${absentees.length} absent student(s).`,
+      });
+    } catch (err: any) {
+      setStatusMsg({ type: 'error', text: 'Failed to dispatch batch alerts' });
+    } finally {
+      setEmailSending(null);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,6 +153,19 @@ export function BulkAttendanceForm({ students }: BulkAttendanceFormProps) {
               >
                 Mark All Absent
               </button>
+              <button
+                type="button"
+                disabled={emailSending !== null}
+                onClick={handleAlertAllAbsentees}
+                className="px-2.5 py-1.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded text-xs font-semibold border border-purple-200 flex items-center gap-1.5 transition disabled:opacity-50"
+              >
+                {emailSending === 'all' ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Mail className="w-3.5 h-3.5" />
+                )}
+                <span>Auto-Alert Absentees</span>
+              </button>
             </div>
           </div>
         </div>
@@ -121,11 +201,14 @@ export function BulkAttendanceForm({ students }: BulkAttendanceFormProps) {
               <th className="px-6 py-3">Student Name</th>
               <th className="px-6 py-3">Class</th>
               <th className="px-6 py-3">Status Selection</th>
+              <th className="px-6 py-3 text-right">Parent Notification</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
             {students.map((s) => {
               const currentStatus = attendanceState[s.id] || 'present';
+              const isCurrentSending = emailSending === s.id;
+
               return (
                 <tr key={s.id} className="hover:bg-slate-50 transition">
                   <td className="px-6 py-3.5 font-mono text-xs font-bold text-slate-800">{s.roll_no}</td>
@@ -167,6 +250,25 @@ export function BulkAttendanceForm({ students }: BulkAttendanceFormProps) {
                         <XCircle className="w-3 h-3" /> Absent
                       </button>
                     </div>
+                  </td>
+                  <td className="px-6 py-3.5 text-right">
+                    <button
+                      type="button"
+                      disabled={isCurrentSending || emailSending === 'all'}
+                      onClick={() => handleSendEmail(s)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
+                        currentStatus === 'absent'
+                          ? 'bg-red-50 text-red-700 hover:bg-red-100 border-red-200'
+                          : 'bg-slate-50 text-slate-600 hover:bg-slate-100 border-slate-200'
+                      } disabled:opacity-50`}
+                    >
+                      {isCurrentSending ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-purple-600" />
+                      ) : (
+                        <Mail className="w-3.5 h-3.5" />
+                      )}
+                      <span>{isCurrentSending ? 'Dispatching...' : 'Send Warning Email'}</span>
+                    </button>
                   </td>
                 </tr>
               );
