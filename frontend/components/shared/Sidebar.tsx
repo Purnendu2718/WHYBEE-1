@@ -68,7 +68,7 @@ export function Sidebar({ role, userName, userEmail }: SidebarProps) {
             <BookOpen className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-base font-bold tracking-tight text-white">CampusERP</h1>
+            <h1 className="text-base font-bold tracking-tight text-white">UNIFLOW</h1>
             <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 capitalize border border-blue-700/50">
               {role} Portal
             </span>

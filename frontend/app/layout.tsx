@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'CampusERP - Integrated Student Management System',
+  title: 'UNIFLOW - Integrated Student Management System',
   description: 'Role-based college ERP portal for Students, Parents, and Faculty/Admin',
 };
 

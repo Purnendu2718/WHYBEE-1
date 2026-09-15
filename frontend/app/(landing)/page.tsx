@@ -11,12 +11,12 @@ export default function LandingPage() {
             <BookOpen className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-white">CampusERP</h1>
+            <h1 className="text-xl font-bold tracking-tight text-white">UNIFLOW</h1>
             <p className="text-xs text-slate-400">Integrated Student Management System</p>
           </div>
         </div>
         <div className="text-xs font-semibold px-3 py-1 bg-slate-800 text-slate-300 rounded-full border border-slate-700">
-          Hackathon MVP Edition
+          UNIFLOW Platform
         </div>
       </header>
 
@@ -103,7 +103,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="px-8 py-6 border-t border-slate-800 text-center text-xs text-slate-500">
-        CampusERP MVP — Next.js 14 App Router + Supabase RLS Defense-in-Depth Architecture
+        UNIFLOW — Integrated Campus Management System & Academic Workflow Platform
       </footer>
     </div>
   );

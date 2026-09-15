@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { BookOpen, User } from 'lucide-react';
 import { Student } from '@/lib/types';
 
-export const WELCOME_MSG = 'Welcome to CampusERP';
+export const WELCOME_MSG = 'Welcome to UNIFLOW';
 
 interface StudentHeaderProps {
   student?: Student | null;
@@ -29,7 +29,7 @@ export function StudentHeader({ student }: StudentHeaderProps) {
           <BookOpen className="w-5 h-5" />
         </div>
         <div>
-          <h1 className="text-sm font-bold text-slate-800 leading-tight">CampusERP</h1>
+          <h1 className="text-sm font-bold text-slate-800 leading-tight">UNIFLOW</h1>
           <p className="text-xs text-slate-500 font-medium">{WELCOME_MSG}</p>
         </div>
       </div>
