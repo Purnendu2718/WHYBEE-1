@@ -21,14 +21,19 @@ function StudentLoginForm() {
     setLoading(true);
     setErrorMessage('');
 
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const supabase = createClient();
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      setErrorMessage(error.message);
+      if (error) {
+        setErrorMessage(error.message);
+      } else {
+        router.push('/student/dashboard');
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.message || 'Authentication failed. Make sure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY environment variables are configured in Netlify/Vercel settings.');
+    } finally {
       setLoading(false);
-    } else {
-      router.push('/student/dashboard');
     }
   };
 
