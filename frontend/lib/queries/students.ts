@@ -9,8 +9,8 @@ export async function getCurrentStudent(): Promise<{ data: Student | null; error
     if (!user) return { data: null, error: 'Not authenticated' };
 
     const { data, error } = await supabase
-      .from('students')
-      .select('*, profile:profiles!students_profile_id_fkey(*)')
+      .from('students2')
+      .select('*, profile:profiles(*)')
       .eq('profile_id', user.id)
       .single();
 
@@ -33,8 +33,8 @@ export async function getLinkedStudentsForParent(parentProfileId?: string): Prom
     }
 
     const { data, error } = await supabase
-      .from('students')
-      .select('*, profile:profiles!students_profile_id_fkey(*)')
+      .from('students2')
+      .select('*, profile:profiles(*)')
       .eq('parent_profile_id', targetId);
 
     if (error) return { data: [], error: error.message };
@@ -50,8 +50,8 @@ export async function getPaginatedStudents(page = 1, limit = 10, search = ''): P
     const offset = (page - 1) * limit;
 
     let query = supabase
-      .from('students')
-      .select('*, profile:profiles!students_profile_id_fkey(*), parent_profile:profiles!students_parent_profile_id_fkey(*)', { count: 'exact' });
+      .from('students2')
+      .select('*, profile:profiles(*), parent_profile:profiles(*)', { count: 'exact' });
 
     if (search) {
       query = query.or(`roll_no.ilike.%${search}%,class.ilike.%${search}%`);

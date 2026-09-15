@@ -8,7 +8,7 @@ export default async function AdminFeesPage() {
   const supabase = createClient();
   const { data: fees } = await supabase
     .from('fees')
-    .select('*, students:students!fees_student_id_fkey(*, profile:profiles!students_profile_id_fkey(*))')
+    .select('*, students:students2(*, profile:profiles(*))')
     .order('created_at', { ascending: false });
 
   return (

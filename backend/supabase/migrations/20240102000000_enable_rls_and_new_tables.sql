@@ -7,7 +7,14 @@
 -- 1. ENFORCE RLS on all existing tables (idempotent)
 -- -------------------------------------------------------
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+DO $$ BEGIN
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'students2') THEN
+    ALTER TABLE students2 ENABLE ROW LEVEL SECURITY;
+  END IF;
+  IF EXISTS (SELECT FROM pg_tables WHERE schemaname = 'public' AND tablename = 'students') THEN
+    ALTER TABLE students ENABLE ROW LEVEL SECURITY;
+  END IF;
+END $$;
 ALTER TABLE attendance ENABLE ROW LEVEL SECURITY;
 ALTER TABLE results ENABLE ROW LEVEL SECURITY;
 ALTER TABLE fees ENABLE ROW LEVEL SECURITY;
