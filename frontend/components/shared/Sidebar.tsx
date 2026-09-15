@@ -13,6 +13,7 @@ import {
   Users,
   LogOut,
   BookOpen,
+  Activity,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -46,6 +47,7 @@ export function Sidebar({ role, userName, userEmail }: SidebarProps) {
       { name: 'Bulk Attendance', href: '/admin/attendance', icon: CalendarCheck },
       { name: 'Enter Results', href: '/admin/results', icon: GraduationCap },
       { name: 'Manage Fees', href: '/admin/fees', icon: CreditCard },
+      { name: 'Recent Activity', href: '/admin/activity', icon: Activity },
     ],
   };
 

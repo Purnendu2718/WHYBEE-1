@@ -71,3 +71,24 @@ export interface AdminDashboardStats {
     avg_marks: number;
   }[];
 }
+
+export interface Notification {
+  id: string;
+  recipient_profile_id: string;
+  message: string;
+  type: 'broadcast' | 'leave_status' | 'attendance_risk' | 'general';
+  is_read: boolean;
+  created_at: string;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  actor_profile_id: string | null;
+  action: string;
+  target_table: string;
+  target_id: string | null;
+  details: Record<string, unknown> | null;
+  created_at: string;
+  actor?: Pick<Profile, 'full_name' | 'role'>;
+}
+

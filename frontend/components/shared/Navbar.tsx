@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserRole } from '@/lib/types';
-import { Bell, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
+import { NotificationBell } from '@/components/shared/NotificationBell';
 
 interface NavbarProps {
   title: string;
@@ -23,10 +24,7 @@ export function Navbar({ title, role, extraRight }: NavbarProps) {
           <span className="capitalize">{role} Authorized</span>
         </div>
 
-        <button className="p-2 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition relative">
-          <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-600 rounded-full"></span>
-        </button>
+        <NotificationBell />
       </div>
     </header>
   );
